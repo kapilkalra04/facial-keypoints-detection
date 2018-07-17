@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers import BatchNormalization, Conv2D, Activation, MaxPooling2D, Dense, GlobalAveragePooling2D
+from keras import optimizers
 
 
 # creating a data-frame to load the training.csv data
@@ -34,7 +35,7 @@ for s in imageStringList:
 # preparing the training data
 # INPUT
 X_temp = np.stack(imageList,axis=0)
-X = X_temp.astype(np.float)[:,:,:,np.newaxis] 			# X.shape = (7000,96,96,1)
+X = X_temp.astype(np.float)[:,:,:,np.newaxis] 				# X.shape = (7000,96,96,1)
 
 # OUTPUT
 Y = np.stack(df3.ix[:,[0,1,2,3,4,5,6,7]].values,axis=0) 	# Y.shape(7000,8)
@@ -44,3 +45,35 @@ X = X/255
 
 # scaling target values to [-1,1] from [0,95]
 Y = (Y - 48)/48
+
+# creating the ANN model
+model = Sequential()
+
+# 1 Hidden layer
+model.add(Dense(units=72, activation='relu', input_dim=(96*96)))
+model.add(Activation('relu'))
+model.add(Dense(8))
+
+sgd = optimizers.SGD(lr=0.01, decay=1e-06, momentum=0.9, nesterov=True)
+model.compile(optimizer=sgd, loss='mse', metrics=['mae'])
+epochs = 2
+
+print "[INFO] Training"
+results = model.fit(X.reshape(Y.shape[0], -1), Y, 
+                 validation_split=0.2, shuffle=True, 
+                 epochs=epochs, batch_size=1)
+
+
+# img = []
+# img.append(X[0, :, :, :].reshape(1, -1))
+# img.append(X[1, :, :, :].reshape(1, -1))
+
+# print img
+# predictions = model.predict(img)
+# predictions = (predictions * 48) + 48
+# answer = predictions.reshape(4,2)
+
+# plt.imshow(imageList[0],cmap='gray')
+# plt.plot(answer[:,0],answer[:,1], 'b*')
+
+# plt.show()
