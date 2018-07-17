@@ -6,16 +6,22 @@ import matplotlib.pyplot as plt
 print "[INFO] Reading training.csv"
 df = pd.read_csv("data/training.csv")
 
-# creating a list that contains all the images
-imagesString = []
-imagesString.extend(df.loc[: , "Image"])
+# extracting a dataframe with only important facial landmarks
+df2 = df.ix[:,['left_eye_center_x','left_eye_center_y','right_eye_center_x','right_eye_center_y'
+,'nose_tip_x','nose_tip_y','mouth_center_bottom_lip_x','mouth_center_bottom_lip_y','Image']]
 
-# converting strings to images
+# dropping rows with incomplete data
+df3 = df2.dropna()
+
+# creating a list that contains all the images but as strings
+imageStringList = []
+imageStringList.extend(df3.loc[:,"Image"])
+
+# converting the strings to numpy arrays
 print "[INFO] Converting string enteries to images"
-images = []
-for s in imagesString:
-	images.append(np.array([int (e) for e in s.split(" ")]).reshape((96,96)))
+imageList = []
+for s in imageStringList:
+	imageList.append(np.array([int (e) for e in s.split(" ")]).reshape((96,96)))
 
-print type(images[0])
-plt.imshow(images[0], cmap="gray")
+plt.imshow(imageList[1],cmap='gray')
 plt.show()
