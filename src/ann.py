@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
+import curves
 from keras.models import Sequential
 from keras.layers import BatchNormalization, Conv2D, Activation, MaxPooling2D, Dense, GlobalAveragePooling2D, Dropout
 from keras import optimizers
@@ -61,55 +60,5 @@ hist = model.fit(X.reshape(Y.shape[0], -1), Y,
                   validation_split=0.2, shuffle=True,
                   epochs=20, batch_size=1)
 
-
-# plotting the loss and metric for the model
-ax1 = plt.subplot(2,1,1)
-plt.plot(hist.history['mean_absolute_error'], linestyle='--', marker='o', color='b')
-plt.plot(hist.history['val_mean_absolute_error'], linestyle='--', marker='o', color='g')
-level1 = hist.history['mean_absolute_error'][0]
-level2 = hist.history['mean_absolute_error'][0] - 0.01
-i = 0
-for e in hist.history['mean_absolute_error']:
-    if i%5==4 :
-        e = round(e,4)
-        ax1.annotate('('+str(i)+','+str(e)+')', xy=(i,level1), textcoords='data',color='b')
-    i = i+1
-i = 0
-for e in hist.history['val_mean_absolute_error']:
-    if i%5==4 :
-        e = round(e,4)
-        ax1.annotate('('+str(i)+','+str(e)+')', xy=(i,level2), textcoords='data',color='g')
-    i = i+1
-plt.title('MAE | mean absolute error')
-plt.ylabel('mae')
-plt.xlabel('epoch')
-plt.legend(['train', 'validation'], loc='lower left')
-
-ax2 = plt.subplot(2,1,2)
-plt.plot(hist.history['loss'], linestyle='--', marker='o', color='b')
-plt.plot(hist.history['val_loss'], linestyle='--', marker='o', color='g')
-level1 = hist.history['loss'][0]
-level2 = hist.history['loss'][0] - 0.01
-i = 0
-for e in hist.history['loss']:
-    if i%5==4 :
-        e = round(e,4)
-        ax2.annotate('('+str(i)+','+str(e)+')', xy=(i,level1), textcoords='data',color='b')
-    i = i+1
-i = 0
-for e in hist.history['val_loss']:
-    if i%5==4 :
-        e = round(e,4)
-        ax2.annotate('('+str(i)+','+str(e)+')', xy=(i,level2), textcoords='data',color='g')
-    i = i+1
-plt.title('MSE | mean squared error')
-plt.ylabel('mse')
-plt.xlabel('epoch')
-plt.legend(['train', 'validation'], loc='lower left')
-
-# exporting the plot
-plt.tight_layout()
-fig = plt.gcf()
-fig.set_size_inches((16,9), forward=False)
-plt.savefig('results/ann.png',dpi=300)
-plt.close()
+# plot loss and metric curves
+curves.generate(hist.history,'ann')
