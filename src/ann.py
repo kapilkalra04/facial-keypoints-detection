@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 from keras.models import Sequential
-from keras.layers import BatchNormalization, Conv2D, Activation, MaxPooling2D, Dense, GlobalAveragePooling2D
+from keras.layers import BatchNormalization, Conv2D, Activation, MaxPooling2D, Dense, GlobalAveragePooling2D, Dropout
 from keras import optimizers
 
 
@@ -30,14 +31,14 @@ for s in imageStringList:
 	imageList.append(np.array([int (e) for e in s.split(" ")]).reshape((96,96)))
 	index = index + 1
 	if index%500 == 0 :
-		print index	
+		print "[INFO] " + str(index) + " images converted"
 
 # preparing the training data
-# INPUT
+# input
 X_temp = np.stack(imageList,axis=0)
 X = X_temp.astype(np.float)[:,:,:,np.newaxis] 				# X.shape = (7000,96,96,1)
 
-# OUTPUT
+# output
 Y = np.stack(df3.ix[:,[0,1,2,3,4,5,6,7]].values,axis=0) 	# Y.shape(7000,8)
 
 # scaling input range to [0,1] from [0,255]
@@ -46,34 +47,69 @@ X = X/255
 # scaling target values to [-1,1] from [0,95]
 Y = (Y - 48)/48
 
-# creating the ANN model
+# creating the ann
 model = Sequential()
 
-# 1 Hidden layer
-model.add(Dense(units=72, activation='relu', input_dim=(96*96)))
+model.add(Dense(units=72, activation='relu', input_shape=(96*96,)))
 model.add(Activation('relu'))
 model.add(Dense(8))
 
-sgd = optimizers.SGD(lr=0.01, decay=1e-06, momentum=0.9, nesterov=True)
-model.compile(optimizer=sgd, loss='mse', metrics=['mae'])
-epochs = 2
+model.compile(optimizer='rmsprop', loss='mean_squared_error', metrics=['mae'])
 
 print "[INFO] Training"
-results = model.fit(X.reshape(Y.shape[0], -1), Y, 
-                 validation_split=0.2, shuffle=True, 
-                 epochs=epochs, batch_size=1)
+hist = model.fit(X.reshape(Y.shape[0], -1), Y,
+                  validation_split=0.2, shuffle=True,
+                  epochs=20, batch_size=1)
 
 
-# img = []
-# img.append(X[0, :, :, :].reshape(1, -1))
-# img.append(X[1, :, :, :].reshape(1, -1))
+# plotting the loss and metric for the model
+ax1 = plt.subplot(2,1,1)
+plt.plot(hist.history['mean_absolute_error'], linestyle='--', marker='o', color='b')
+plt.plot(hist.history['val_mean_absolute_error'], linestyle='--', marker='o', color='g')
+level1 = hist.history['mean_absolute_error'][0]
+level2 = hist.history['mean_absolute_error'][0] - 0.01
+i = 0
+for e in hist.history['mean_absolute_error']:
+    if i%5==4 :
+        e = round(e,4)
+        ax1.annotate('('+str(i)+','+str(e)+')', xy=(i,level1), textcoords='data',color='b')
+    i = i+1
+i = 0
+for e in hist.history['val_mean_absolute_error']:
+    if i%5==4 :
+        e = round(e,4)
+        ax1.annotate('('+str(i)+','+str(e)+')', xy=(i,level2), textcoords='data',color='g')
+    i = i+1
+plt.title('MAE | mean absolute error')
+plt.ylabel('mae')
+plt.xlabel('epoch')
+plt.legend(['train', 'validation'], loc='lower left')
 
-# print img
-# predictions = model.predict(img)
-# predictions = (predictions * 48) + 48
-# answer = predictions.reshape(4,2)
+ax2 = plt.subplot(2,1,2)
+plt.plot(hist.history['loss'], linestyle='--', marker='o', color='b')
+plt.plot(hist.history['val_loss'], linestyle='--', marker='o', color='g')
+level1 = hist.history['loss'][0]
+level2 = hist.history['loss'][0] - 0.01
+i = 0
+for e in hist.history['loss']:
+    if i%5==4 :
+        e = round(e,4)
+        ax2.annotate('('+str(i)+','+str(e)+')', xy=(i,level1), textcoords='data',color='b')
+    i = i+1
+i = 0
+for e in hist.history['val_loss']:
+    if i%5==4 :
+        e = round(e,4)
+        ax2.annotate('('+str(i)+','+str(e)+')', xy=(i,level2), textcoords='data',color='g')
+    i = i+1
+plt.title('MSE | mean squared error')
+plt.ylabel('mse')
+plt.xlabel('epoch')
+plt.legend(['train', 'validation'], loc='lower left')
 
-# plt.imshow(imageList[0],cmap='gray')
-# plt.plot(answer[:,0],answer[:,1], 'b*')
-
-# plt.show()
+# exporting the plot
+plt.tight_layout()
+fig = plt.gcf()
+fig.set_size_inches((16,9), forward=False)
+plt.savefig('results/ann.png',dpi=300)
+plt.close()
