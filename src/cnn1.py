@@ -8,8 +8,7 @@ from keras import optimizers
 # ###
 # MODEL INSPIRED FROM
 # 1. http://flothesof.github.io/convnet-face-keypoint-detection.html
-# 2. http://danielnouri.org/notes/2014/12/17/using-convolutional-neural-nets-to-detect-facial-keypoints-tutorial/
-# 3. https://towardsdatascience.com/detecting-facial-features-using-deep-learning-2e23c8660a7a
+# 2. https://towardsdatascience.com/detecting-facial-features-using-deep-learning-2e23c8660a7a
 # ###
 
 # creating a data-frame to load the training.csv data
@@ -55,29 +54,29 @@ Y = (Y - 48)/48
 # creating the ann model
 model = Sequential()
 
-model.add(BatchNormalization(input_shape=(96,96,1)))
+model.add(BatchNormalization(input_shape=(96,96,1)))                                                # OUTPUT (96,96,1)
 
-model.add(Conv2D(filters=24, kernel_size=(5, 5), strides=(1,1), kernel_initializer='he_normal'))
+model.add(Conv2D(filters=24, kernel_size=(5, 5), strides=(1,1), kernel_initializer='he_normal'))    # OUTPUT (92,92,24)
 model.add(Activation("relu"))
-model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
+model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (46,46,24)
 model.add(Dropout(0.13))
 
-model.add(Conv2D(filters=36, kernel_size=(5, 5), strides=(1,1)))
+model.add(Conv2D(filters=36, kernel_size=(5, 5), strides=(1,1)))                                    # OUTPUT (42,42,864)
 model.add(Activation("relu"))
-model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
+model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (21,21,864)
 model.add(Dropout(0.13))
 
-model.add(Conv2D(filters=48, kernel_size=(5, 5), strides=(1,1)))
+model.add(Conv2D(filters=48, kernel_size=(5, 5), strides=(1,1)))                                    # OUTPUT (17,17,41472)
 model.add(Activation("relu"))
-model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
+model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (9,9,41472)
 model.add(Dropout(0.13))
 
-model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1,1)))
+model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1,1)))                                    # OUTPUT (7,7,2654208)
 model.add(Activation("relu"))
-model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
+model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (4,4,2654208)
 model.add(Dropout(0.13))
 
-model.add(GlobalAveragePooling2D());
+model.add(GlobalAveragePooling2D());                                                                # OUTPUT (2654208)
 
 model.add(Dense(240, activation='relu'))
 model.add(Dense(24, activation='relu'))
