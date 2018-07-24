@@ -60,17 +60,17 @@ model.add(Activation("relu"))
 model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (47,47,32)
 model.add(Dropout(0.13))
 
-model.add(Conv2D(filters=64, kernel_size=(2,2), strides=(1,1)))                                     # OUTPUT (46,46,32*64)
+model.add(Conv2D(filters=64, kernel_size=(2,2), strides=(1,1)))                                     # OUTPUT (46,46,64)
 model.add(Activation("relu"))
-model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (23,23,32*64)
+model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (23,23,64)
 model.add(Dropout(0.13))
 
-model.add(Conv2D(filters=128, kernel_size=(2,2), strides=(1,1)))                                    # OUTPUT (22,22,32*64*128)
+model.add(Conv2D(filters=128, kernel_size=(2,2), strides=(1,1)))                                    # OUTPUT (22,22,128)
 model.add(Activation("relu"))
-model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (11,11,32*64*128)
+model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (11,11,128)
 model.add(Dropout(0.13))
 
-model.add(Flatten());                                                                               # OUTPUT (11*11*32*64*128)
+model.add(Flatten());                                                                               # OUTPUT (11*11*128)
 
 model.add(Dense(500, activation='relu'))
 model.add(Dense(500, activation='relu'))

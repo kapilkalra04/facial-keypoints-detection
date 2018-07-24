@@ -55,25 +55,25 @@ model.add(Activation("relu"))
 model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (45,45,24)
 model.add(Dropout(0.13))
 
-model.add(Conv2D(filters=36, kernel_size=(6,6), strides=(1,1)))                                     # OUTPUT (40,40,24*36)
+model.add(Conv2D(filters=36, kernel_size=(6,6), strides=(1,1)))                                     # OUTPUT (40,40,36)
 model.add(Activation("relu"))
-model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (20,20,24*36)
+model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (20,20,36)
 model.add(Dropout(0.13))
 
-model.add(Conv2D(filters=48, kernel_size=(5,5), strides=(1,1)))                                     # OUTPUT (16,16,24*36*48)
+model.add(Conv2D(filters=48, kernel_size=(5,5), strides=(1,1)))                                     # OUTPUT (16,16,48)
 model.add(Activation("relu"))
-model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (8,8,24*36*48)
+model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (8,8,48)
 model.add(Dropout(0.13))
 
-model.add(Conv2D(filters=60, kernel_size=(5,5), strides=(1,1)))                                     # OUTPUT (4,4,24*36*48*60)
+model.add(Conv2D(filters=60, kernel_size=(5,5), strides=(1,1)))                                     # OUTPUT (4,4,60)
 model.add(Activation("relu"))
-model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (2,2,24*36*48*60)
+model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))                                             # OUTPUT (2,2,60)
 model.add(Dropout(0.13))
 
-model.add(Conv2D(filters=72, kernel_size=(2,2), strides=(1,1)))                                     # OUTPUT (1,1,24*36*48*60*72)
+model.add(Conv2D(filters=72, kernel_size=(2,2), strides=(1,1)))                                     # OUTPUT (1,1,72)
 model.add(Activation("relu"))
 
-model.add(GlobalAveragePooling2D());                                                                # OUTPUT (24*36*48*60*72)
+model.add(GlobalAveragePooling2D());                                                                # OUTPUT (72)
 
 
 model.add(Dense(500, activation='relu'))
