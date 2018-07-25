@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import curves
+import augment
 from keras.models import Sequential
 from keras.layers import BatchNormalization, Conv2D, Activation, MaxPooling2D, Dense, Flatten, Dropout
 from keras import optimizers
@@ -34,10 +35,16 @@ for s in imageStringList:
 # preparing the training data
 # input
 X_temp = np.stack(imageList,axis=0)
-X = X_temp.astype(np.float)[:,:,:,np.newaxis] 				# X.shape = (7000,96,96,1)
+X1 = X_temp.astype(np.float)[:,:,:,np.newaxis] 				# X.shape = (7000,96,96,1)
+X2 = augment.invert(X1)
+X = np.concatenate((X1,X2),axis=0)
+print X.shape
 
 # output
-Y = np.stack(df3.ix[:,[0,1,2,3,4,5,6,7]].values,axis=0) 	# Y.shape(7000,8)
+Y1 = np.stack(df3.ix[:,[0,1,2,3,4,5,6,7]].values,axis=0) 	# Y.shape(7000,8)
+Y2 = augment.swap(Y1)
+Y = np.concatenate((Y1,Y2),axis=0)
+print Y.shape
 
 # scaling input range to [0,1] from [0,255]
 X = X/255
@@ -53,22 +60,27 @@ model.add(BatchNormalization(input_shape=(96,96,1)))
 model.add(Conv2D(filters=16, kernel_size=(3,3), strides=(1,1), kernel_initializer='he_normal'))
 model.add(Activation("relu"))
 model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
+model.add(Dropout(0.13))
 
 model.add(Conv2D(filters=32, kernel_size=(3,3), strides=(1,1), kernel_initializer='he_normal'))
 model.add(Activation("relu"))
 model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
+model.add(Dropout(0.13))
 
 model.add(Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), kernel_initializer='he_normal'))
 model.add(Activation("relu"))
 model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
+model.add(Dropout(0.13))
 
 model.add(Conv2D(filters=128, kernel_size=(3,3), strides=(1,1), kernel_initializer='he_normal'))
 model.add(Activation("relu"))
 model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
+model.add(Dropout(0.13))
 
 model.add(Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), kernel_initializer='he_normal'))
 model.add(Activation("relu"))
 model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
+model.add(Dropout(0.13))
 
 model.add(Flatten())
 
@@ -86,7 +98,7 @@ model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae'])
 
 print "[INFO] Training"
 hist = model.fit(X, Y, validation_split=0.2, shuffle=True,
- epochs=20, batch_size=32)
+ epochs=200, batch_size=32)
 
 # plot loss and metric curves
 curves.generate(hist.history,'cnn25')
