@@ -92,7 +92,7 @@ model.add(Dense(256))
 model.add(Dropout(0.33))
 model.add(Dense(8))
 
-model.summary()
+#model.summary()
 
 model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae'])
 
